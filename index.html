@@ -2,169 +2,542 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zentoo — Softwares sob medida</title>
-<meta name="description" content="Zentoo desenvolve e vende softwares sob medida para o seu negócio.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zentoo — Software sob medida para quem toca o negócio</title>
+<meta name="description" content="A Zentoo constrói software sob medida para negócios pequenos e médios: pedido, cobrança, estoque e relatório rodando sozinhos.">
+<meta property="og:title" content="Zentoo — Software sob medida">
+<meta property="og:description" content="Pedido, cobrança, estoque e relatório rodando sozinhos, do jeito que a sua operação já funciona.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zentoo.com.br/">
+<meta property="og:locale" content="pt_BR">
+<link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --bg-card: #14141c;
-    --border: #26262f;
-    --text: #f2f2f5;
-    --text-dim: #9a9aa5;
-    --accent: #7c5cff;
-    --accent-2: #00e0b8;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.5;
-  }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-latin.woff2') format('woff2');
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
 
-  header {
-    position: sticky; top: 0; z-index: 10;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
-  }
-  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
-  .logo { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
-  .logo span { color: var(--accent); }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent); color: #fff;
-    padding: 12px 22px; border-radius: 10px;
-    font-weight: 600; font-size: 0.95rem;
-    text-decoration: none;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,92,255,0.35); }
-  .btn.ghost {
-    background: transparent; border: 1px solid var(--border); color: var(--text);
-  }
+:root {
+  /* Paleta: âmbar mel sobre papel branco. Estratégia "committed" — uma cor
+     de marca carrega a página; sem gradiente, sem segunda família de cor. */
+  --bg:          oklch(1 0 0);
+  --ink:         oklch(0.19 0.012 65);
+  --muted:       oklch(0.47 0.012 65);
+  --muted-dark:  oklch(0.76 0.014 65);
+  --hair:        oklch(0.895 0.004 65);
+  --hair-dark:   oklch(0.32 0.014 65);
+  --amber:       oklch(0.78 0.17 65);
+  --amber-line:  oklch(0.655 0.155 62);
+  /* âmbar escurecido só para texto pequeno: 4.86:1 sobre branco */
+  --amber-ink:   oklch(0.56 0.16 60);
+  --grid-minor:  oklch(0.973 0.003 65);
+  --grid-major:  oklch(0.945 0.005 65);
 
-  .hero { padding: 110px 0 90px; text-align: center; }
-  .eyebrow {
-    display: inline-block; font-size: 0.8rem; font-weight: 600;
-    color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase;
-    border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px;
-    margin-bottom: 24px;
-  }
-  h1 {
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
-    font-weight: 800; letter-spacing: -0.03em;
-    max-width: 780px; margin: 0 auto 20px;
-  }
-  h1 .grad {
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hero p {
-    color: var(--text-dim); font-size: 1.15rem;
-    max-width: 560px; margin: 0 auto 36px;
-  }
-  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  section.features { padding: 80px 0; border-top: 1px solid var(--border); }
-  .section-title { text-align: center; margin-bottom: 56px; }
-  .section-title h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
-  .section-title p { color: var(--text-dim); }
+  /* z-index semântico */
+  --z-deco: 0;
+  --z-content: 1;
+  --z-header: 20;
+}
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  .card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 28px;
-  }
-  .card .icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem; margin-bottom: 18px;
-  }
-  .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-  .card p { color: var(--text-dim); font-size: 0.95rem; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; }
+img, svg { display: block; max-width: 100%; }
 
-  section.cta {
-    padding: 90px 0; text-align: center; border-top: 1px solid var(--border);
-  }
-  section.cta h2 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
-  section.cta p { color: var(--text-dim); margin-bottom: 32px; }
+body {
+  background-color: var(--bg);
+  /* papel milimetrado: malha fina de 24px + malha grossa de 120px */
+  background-image:
+    repeating-linear-gradient(to right,  var(--grid-minor) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to bottom, var(--grid-minor) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to right,  var(--grid-major) 0 1px, transparent 1px 120px),
+    repeating-linear-gradient(to bottom, var(--grid-major) 0 1px, transparent 1px 120px);
+  color: var(--ink);
+  font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  font-synthesis-weight: none;
+}
 
-  footer {
-    border-top: 1px solid var(--border); padding: 32px 0;
-    color: var(--text-dim); font-size: 0.9rem;
-    text-align: center;
-  }
+.wrap { width: min(1180px, 100% - 2.5rem); margin-inline: auto; }
 
-  @media (max-width: 720px) {
-    .grid { grid-template-columns: 1fr; }
-  }
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 800;
+  font-stretch: 108%;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+p { margin: 0; text-wrap: pretty; }
+
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------- botões: chapa de sinalização, sombra sólida deslocada ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.95rem 1.5rem;
+  background: var(--amber);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1rem;
+  font-stretch: 104%;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.btn:hover  { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--ink); }
+.btn:active { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--ink); }
+.btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.btn--quiet {
+  background: transparent;
+  box-shadow: none;
+  border-color: var(--hair);
+  font-weight: 600;
+}
+.btn--quiet:hover { transform: none; box-shadow: none; border-color: var(--ink); }
+
+.btn--ondark { border-color: var(--bg); box-shadow: 5px 5px 0 var(--amber-line); }
+.btn--ondark:hover { box-shadow: 3px 3px 0 var(--amber-line); }
+
+/* ---------------------------- cabeçalho ---------------------------- */
+header {
+  position: sticky; top: 0; z-index: var(--z-header);
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  border-bottom: 1px solid var(--hair);
+}
+@supports (backdrop-filter: blur(4px)) {
+  header { backdrop-filter: blur(6px); }
+}
+header .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 1rem; }
+
+.mark { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+.mark svg { width: 26px; height: 26px; }
+.mark span {
+  font-weight: 800; font-size: 1.32rem; font-stretch: 112%;
+  letter-spacing: -0.045em;
+}
+.header-cta { padding: 0.7rem 1.15rem; box-shadow: 4px 4px 0 var(--ink); font-size: 0.95rem; }
+.header-cta:hover { box-shadow: 2px 2px 0 var(--ink); }
+
+/* ------------------------------- hero ------------------------------- */
+.hero { position: relative; padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(3rem, 6vw, 5rem); }
+/* título em largura total, depois a linha de apoio: a frase ganha escala
+   real em vez de quebrar dentro de uma coluna estreita */
+.hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+h1 { font-size: clamp(2.15rem, 6.2vw, 4.75rem); letter-spacing: -0.04em; }
+h1 .l { display: block; }
+
+.lead {
+  max-width: 46ch;
+  font-size: clamp(1.06rem, 1.35vw, 1.22rem);
+  color: var(--muted);
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 2.2rem; }
+
+/* marcas de registro, canto da prancheta */
+.regmark { position: absolute; width: 20px; height: 20px; z-index: var(--z-deco); pointer-events: none; }
+.regmark svg { width: 100%; height: 100%; stroke: var(--amber-line); stroke-width: 1.5; fill: none; }
+.regmark.tl { top: 22px; left: 12px; }
+.regmark.tr { top: 22px; right: 12px; transform: scaleX(-1); }
+
+/* --------------------------- diagrama SVG --------------------------- */
+.dg { width: 100%; height: auto; }
+/* anotação de prancheta: mesma família, largura condensada — o eixo de
+   width do Archivo faz o contraste que uma segunda fonte faria */
+.dg text {
+  font-family: 'Archivo', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  font-stretch: 84%;
+  fill: var(--muted);
+  letter-spacing: 0.015em;
+}
+.dg .dg-center   { font-size: 34px; font-weight: 800; font-stretch: 108%; fill: var(--ink); letter-spacing: -0.03em; }
+.dg .dg-sub      { font-size: 19px; font-weight: 500; fill: var(--muted); }
+.dg .dg-dim      { font-size: 18px; font-weight: 600; fill: var(--amber-ink); }
+.dg .track       { fill: none; stroke: oklch(0.86 0.006 65); stroke-width: 2.5; }
+.dg .pulse       { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round;
+                   stroke-dasharray: 150 1015; stroke-dashoffset: 0;
+                   animation: dg-run 6s linear infinite; }
+.dg .node        { fill: var(--bg); stroke: var(--amber-line); stroke-width: 2.5; }
+.dg .node-core   { fill: var(--amber-line); transform-box: fill-box; transform-origin: center; }
+.dg .rule        { stroke: var(--hair); stroke-width: 1.5; }
+.dg .dimline     { stroke: var(--amber-line); stroke-width: 1.5; }
+.dg .corner      { stroke: var(--hair); stroke-width: 1.5; fill: none; }
+
+@keyframes dg-run { to { stroke-dashoffset: -1164; } }
+/* cada nó acende quando o pulso passa por ele (atrasos = posição no traçado) */
+@keyframes dg-hit {
+  0%, 6%   { r: 7; fill: var(--amber-line); }
+  2%       { r: 11; fill: var(--amber); }
+  100%     { r: 7; fill: var(--amber-line); }
+}
+.dg .node-core { animation: dg-hit 6s linear infinite; }
+.dg .n1 { animation-delay: 0.70s; }
+.dg .n2 { animation-delay: 2.20s; }
+.dg .n3 { animation-delay: 3.70s; }
+.dg .n4 { animation-delay: 5.20s; }
+
+/* ---------------------------- seções ---------------------------- */
+section { position: relative; }
+.band { padding: clamp(3.5rem, 7vw, 6rem) 0; border-top: 1px solid var(--hair); }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 4rem);
+}
+h2 { font-size: clamp(1.85rem, 3.4vw, 2.85rem); }
+.h2-note { margin-top: 1rem; color: var(--muted); max-width: 34ch; font-size: 1rem; }
+
+/* lista de sinais — folha de especificação, não cards */
+.spec { list-style: none; margin: 0; padding: 0; }
+.spec li {
+  display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.5rem;
+  padding: 1.05rem 0;
+  border-top: 1px solid var(--hair);
+  font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.spec li:last-child { border-bottom: 1px solid var(--hair); }
+.spec .tick { color: var(--amber-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.spec-close { margin-top: 1.5rem; font-weight: 600; font-size: 1.05rem; }
+/* faixa âmbar sólida atrás do texto — marcação de sinalização, não cor de texto */
+.spec-close b { font-weight: 800; background: var(--amber); padding: 0.1em 0.35em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* como trabalhamos — sequência real, por isso numerada */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 3rem; }
+.step { padding: 0 clamp(1rem, 2.2vw, 2rem); border-left: 1px solid var(--hair); }
+.step:first-child { padding-left: 0; border-left: 0; }
+.step:last-child { padding-right: 0; }
+.step .num {
+  font-size: clamp(2.6rem, 4.4vw, 3.6rem);
+  font-weight: 800; font-stretch: 112%;
+  line-height: 1; letter-spacing: -0.05em;
+  color: var(--bg);
+  -webkit-text-stroke: 1.5px var(--amber-ink);
+  font-variant-numeric: tabular-nums;
+}
+.step h3 { margin: 0.9rem 0 0.55rem; font-size: 1.22rem; letter-spacing: -0.025em; }
+.step p { color: var(--muted); font-size: 1rem; }
+
+/* trabalhos — faixa invertida, linha de tabela técnica */
+.dark {
+  background: var(--ink);
+  color: var(--bg);
+  background-image: none;
+  border-top: 0;
+}
+.dark h2 { color: var(--bg); }
+.dark .h2-note { color: var(--muted-dark); }
+.work { list-style: none; margin: 2.6rem 0 0; padding: 0; }
+.work li {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 0.95fr) minmax(0, 1.3fr);
+  gap: clamp(0.75rem, 2vw, 2rem);
+  padding: 1.6rem 0;
+  border-top: 1px solid var(--hair-dark);
+  align-items: start;
+}
+.work li:last-child { border-bottom: 1px solid var(--hair-dark); }
+/* rótulo do setor, não um contador: a lista não é uma sequência */
+.work .tag { color: var(--amber); font-weight: 600; font-size: 0.92rem; font-stretch: 88%; padding-top: 0.4rem; }
+.work h3 { font-size: clamp(1.15rem, 1.9vw, 1.5rem); letter-spacing: -0.028em; }
+.work p { color: var(--muted-dark); font-size: 1.02rem; }
+
+/* chamada final — a cor vira superfície */
+.close { background: var(--amber); background-image: none; border-top: 0; text-align: center; }
+.close h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); max-width: 18ch; margin-inline: auto; }
+.close p { margin: 1.25rem auto 2.2rem; max-width: 52ch; font-size: 1.1rem; color: color-mix(in oklch, var(--ink) 82%, var(--amber)); }
+.close .btn { background: var(--ink); color: var(--amber); border-color: var(--ink); box-shadow: 5px 5px 0 color-mix(in oklch, var(--ink) 35%, var(--amber)); }
+.close .btn:hover { box-shadow: 3px 3px 0 color-mix(in oklch, var(--ink) 35%, var(--amber)); }
+
+footer { border-top: 1px solid var(--hair); padding: 2.2rem 0; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; justify-content: space-between; }
+footer p, footer a { color: var(--muted); font-size: 0.94rem; }
+footer a { text-decoration-color: var(--hair); text-underline-offset: 3px; }
+footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
+
+/* --------------------------- movimento --------------------------- */
+.js .hero h1 .l,
+.js .hero .lead,
+.js .hero .hero-actions,
+.js .hero .figure { opacity: 0; animation: rise 0.85s var(--ease) forwards; }
+.js .hero h1 .l:nth-child(1) { animation-delay: 0.05s; }
+.js .hero h1 .l:nth-child(2) { animation-delay: 0.16s; }
+.js .hero .lead              { animation-delay: 0.3s; }
+.js .hero .hero-actions      { animation-delay: 0.4s; }
+.js .hero .figure            { animation-delay: 0.24s; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* revelação escalonada só na faixa de trabalhos — não em toda seção */
+.js .work li { opacity: 0; }
+.js .work li.in { animation: rise 0.7s var(--ease) forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .js .hero h1 .l, .js .hero .lead, .js .hero .hero-actions, .js .hero .figure, .js .work li { opacity: 1; animation: none; }
+  .dg .pulse { stroke-dasharray: none; animation: none; }
+  .dg .node-core { animation: none; }
+}
+
+/* --------------------------- responsivo --------------------------- */
+@media (max-width: 900px) {
+  .hero-row, .split { grid-template-columns: minmax(0, 1fr); }
+  .hero-row { gap: 2.5rem; }
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .step { padding: 1.6rem 0 0; border-left: 0; border-top: 1px solid var(--hair); }
+  .step:first-child { padding-top: 0; border-top: 0; }
+  .work li { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+  .work .tag { padding-top: 0; }
+  .dg text { font-size: 27px; }
+  .dg .dg-center { font-size: 40px; }
+  .dg .dg-sub { font-size: 23px; }
+  .dg .dg-dim { font-size: 22px; }
+}
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .wrap { width: min(1180px, 100% - 2rem); }
+  .header-cta span { display: none; }
+  .header-cta { padding: 0.7rem 0.85rem; }
+  .btn { width: 100%; justify-content: center; }
+  .header-cta { width: auto; }
+}
 </style>
 </head>
 <body>
+<script>document.documentElement.classList.add('js');</script>
 
 <header>
   <div class="wrap">
-    <div class="logo">zen<span>too</span></div>
-    <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    <a class="mark" href="/" aria-label="Zentoo, página inicial">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="25" height="25" rx="8" fill="none" stroke="oklch(0.19 0.012 65)" stroke-width="3"/>
+        <circle cx="16" cy="16" r="5" fill="oklch(0.78 0.17 65)"/>
+      </svg>
+      <span>zentoo</span>
+    </a>
+    <a class="btn header-cta" href="https://wa.me/5519982521727" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.65 4.21 3.72.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+      <span>Falar no WhatsApp</span>
+    </a>
   </div>
 </header>
 
-<section class="hero">
-  <div class="wrap">
-    <span class="eyebrow">Software sob medida</span>
-    <h1>Softwares que <span class="grad">resolvem</span> o problema do seu negócio</h1>
-    <p>A Zentoo desenvolve e vende soluções digitais sob medida — do sistema interno ao produto que seu cliente usa todo dia.</p>
-    <div class="hero-actions">
-      <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
-      <a class="btn ghost" href="#features">Ver o que fazemos</a>
-    </div>
-  </div>
-</section>
+<main>
 
-<section class="features" id="features">
-  <div class="wrap">
-    <div class="section-title">
-      <h2>O que a Zentoo entrega</h2>
-      <p>Software com dono, do primeiro protótipo ao dia a dia em produção.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="icon">⚙️</div>
-        <h3>Sistemas sob medida</h3>
-        <p>Do zero ou integrado ao que já existe, focado no processo real da sua operação.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🚀</div>
-        <h3>Automação</h3>
-        <p>Menos trabalho manual, menos planilha, menos retrabalho — mais tempo pro que importa.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🛠️</div>
-        <h3>Suporte contínuo</h3>
-        <p>Software não termina na entrega. Acompanhamos, ajustamos e evoluímos com você.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  <!-- ------------------------------ hero ------------------------------ -->
+  <section class="hero">
+    <span class="regmark tl" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M0 6V0h6"/></svg></span>
+    <span class="regmark tr" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M0 6V0h6"/></svg></span>
 
-<section class="cta">
-  <div class="wrap">
-    <h2>Quer conversar sobre o seu projeto?</h2>
-    <p>Chama no WhatsApp e explica o que você precisa.</p>
-    <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
-  </div>
-</section>
+    <div class="wrap">
+      <h1>
+        <span class="l">Tira da sua cabeça.</span>
+        <span class="l">Põe no sistema.</span>
+      </h1>
+
+      <div class="hero-row">
+      <div>
+        <p class="lead">
+          A Zentoo constrói software sob medida para negócios pequenos e médios.
+          Pedido, cobrança, estoque e relatório rodando sozinhos, do jeito que a
+          sua operação já funciona.
+        </p>
+        <div class="hero-actions">
+          <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.65 4.21 3.72.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+            Falar no WhatsApp
+          </a>
+          <a class="btn btn--quiet" href="#trabalhos">Ver o que já construímos</a>
+        </div>
+      </div>
+
+      <div class="figure">
+        <svg class="dg" viewBox="0 88 860 444" role="img" aria-labelledby="dg-t dg-d">
+          <title id="dg-t">Diagrama do ciclo automatizado de uma venda</title>
+          <desc id="dg-d">Um circuito fechado com quatro pontos — pedido entra, Pix gerado, pagamento confirmado e cliente avisado — girando sozinho, 24 horas por dia.</desc>
+
+          <!-- marcas de canto, prancheta técnica -->
+          <path class="corner" d="M24 118V98h20M816 98h20v20M836 502v20h-20M44 522H24v-20"/>
+
+          <!-- traçado do circuito -->
+          <path class="track" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
+          <path class="pulse" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
+
+          <!-- nós -->
+          <circle class="node" cx="430" cy="150" r="13"/><circle class="node-core n1" cx="430" cy="150" r="7"/>
+          <circle class="node" cx="610" cy="280" r="13"/><circle class="node-core n2" cx="610" cy="280" r="7"/>
+          <circle class="node" cx="430" cy="410" r="13"/><circle class="node-core n3" cx="430" cy="410" r="7"/>
+          <circle class="node" cx="250" cy="280" r="13"/><circle class="node-core n4" cx="250" cy="280" r="7"/>
+
+          <!-- rótulos -->
+          <text x="430" y="112" text-anchor="middle">pedido entra</text>
+          <text x="640" y="286" text-anchor="start">Pix gerado</text>
+          <text x="430" y="456" text-anchor="middle">pagamento confirmado</text>
+          <text x="220" y="286" text-anchor="end">cliente avisado</text>
+
+          <!-- centro -->
+          <text class="dg-center" x="430" y="274" text-anchor="middle">roda sozinho</text>
+          <text class="dg-sub" x="430" y="306" text-anchor="middle">sem ninguém no meio</text>
+
+          <!-- linha de cota -->
+          <!-- cota interrompida no meio para o rótulo: não precisa de tarja
+               branca por cima, que furaria o papel milimetrado do fundo -->
+          <path class="dimline" d="M250 500h102M508 500h102M250 492v16M610 492v16"/>
+          <text class="dg-dim" x="430" y="506" text-anchor="middle">24 h por dia</text>
+        </svg>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------- sinais ----------------------------- -->
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>Sinais de que falta sistema</h2>
+        <p class="h2-note">Nenhum deles aparece de uma vez. Eles vão se acumulando até virar o seu dia inteiro.</p>
+      </div>
+      <div>
+        <ul class="spec">
+          <li><span class="tick" aria-hidden="true">—</span><span>Você é a única pessoa que entende a planilha.</span></li>
+          <li><span class="tick" aria-hidden="true">—</span><span>Pedido chega no WhatsApp e vira anotação.</span></li>
+          <li><span class="tick" aria-hidden="true">—</span><span>A cobrança sai quando alguém lembra de mandar.</span></li>
+          <li><span class="tick" aria-hidden="true">—</span><span>Pra saber quanto vendeu no mês, tem que somar na mão.</span></li>
+          <li><span class="tick" aria-hidden="true">—</span><span>O estoque só está certo no dia em que você confere.</span></li>
+        </ul>
+        <p class="spec-close">Reconheceu três? <b>Já dá pra automatizar.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------- como trabalha --------------------------- -->
+  <section class="band">
+    <div class="wrap">
+      <h2>Como a gente trabalha</h2>
+      <p class="h2-note">Três etapas, nessa ordem. Sem proposta de trinta páginas.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">01</div>
+          <h3>Entender a sua operação</h3>
+          <p>A gente senta e mapeia como você trabalha hoje. O software se adapta ao seu processo, não o contrário.</p>
+        </div>
+        <div class="step">
+          <div class="num">02</div>
+          <h3>Construir só o que resolve</h3>
+          <p>Nada de sistema com quarenta telas que ninguém abre. Entra o que você vai usar todo dia, e mais nada.</p>
+        </div>
+        <div class="step">
+          <div class="num">03</div>
+          <h3>Continuar responsável</h3>
+          <p>Software não acaba na entrega. Ajuste, correção e evolução continuam sendo problema nosso.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------- trabalhos ---------------------------- -->
+  <section class="band dark" id="trabalhos">
+    <div class="wrap">
+      <h2>O que já construímos</h2>
+      <p class="h2-note">Sistemas em produção, rodando hoje.</p>
+      <ul class="work">
+        <li>
+          <span class="tag">varejo</span>
+          <h3>Loja que vende dentro do Telegram</h3>
+          <p>O bot recebe o pedido, gera o Pix, confirma o pagamento sozinho, baixa o estoque e libera a entrega. Ninguém no meio do caminho.</p>
+        </li>
+        <li>
+          <span class="tag">financeiro</span>
+          <h3>Conciliação bancária sem abrir extrato</h3>
+          <p>Os Pix e o extrato do banco chegam por e-mail. O sistema lê, classifica e joga tudo no painel, todo dia, sem ninguém pedir.</p>
+        </li>
+        <li>
+          <span class="tag">gestão</span>
+          <h3>Painel financeiro do mês</h3>
+          <p>Entrada, saída e saldo num lugar só, atualizados sozinhos. Acabou a planilha paralela que ninguém sabe se está certa.</p>
+        </li>
+        <li>
+          <span class="tag">investimentos</span>
+          <h3>Carteira de investimentos consolidada</h3>
+          <p>Posição, histórico e desempenho da carteira na B3 num painel só, sem exportar nem colar nada na mão.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ----------------------------- fechamento ----------------------------- -->
+  <section class="band close">
+    <div class="wrap">
+      <h2>Me conta o que trava no seu negócio.</h2>
+      <p>Descreva a sua operação no WhatsApp. Se o seu caso não for de software, a gente fala isso também, e você economiza o tempo da reunião.</p>
+      <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.13.17 1.74 2.65 4.21 3.72.59.25 1.05.4 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+        Falar no WhatsApp
+      </a>
+    </div>
+  </section>
+
+</main>
 
 <footer>
   <div class="wrap">
-    &copy; 2026 Zentoo. Todos os direitos reservados.
+    <p>Zentoo · software sob medida.</p>
+    <p><a href="https://wa.me/5519982521727" target="_blank" rel="noopener">(19) 98252-1727</a></p>
+    <p>&copy; 2026</p>
   </div>
 </footer>
+
+<script>
+// Revelação escalonada da faixa de trabalhos. O padrão é conteúdo visível:
+// a classe `js` é que esconde, então sem JS nada some.
+(function () {
+  var items = document.querySelectorAll('.work li');
+  if (!items.length) return;
+  var show = function (el, i) { el.style.animationDelay = (i * 0.09) + 's'; el.classList.add('in'); };
+
+  if (!('IntersectionObserver' in window)) {
+    items.forEach(show);
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      show(e.target, [].indexOf.call(items, e.target));
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px' });
+  items.forEach(function (el) { io.observe(el); });
+
+  // rede de segurança: se por algum motivo o observer não disparar
+  // (aba oculta, renderizador headless), tudo aparece mesmo assim.
+  setTimeout(function () { items.forEach(function (el, i) { if (!el.classList.contains('in')) show(el, i); }); }, 2500);
+})();
+</script>
 
 </body>
 </html>
