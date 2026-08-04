@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zentoo — Softwares sob medida</title>
+<meta name="description" content="Zentoo desenvolve e vende softwares sob medida para o seu negócio.">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: #14141c;
+    --border: #26262f;
+    --text: #f2f2f5;
+    --text-dim: #9a9aa5;
+    --accent: #7c5cff;
+    --accent-2: #00e0b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .logo { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff;
+    padding: 12px 22px; border-radius: 10px;
+    font-weight: 600; font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,92,255,0.35); }
+  .btn.ghost {
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+  }
+
+  .hero { padding: 110px 0 90px; text-align: center; }
+  .eyebrow {
+    display: inline-block; font-size: 0.8rem; font-weight: 600;
+    color: var(--accent-2); letter-spacing: 0.08em; text-transform: uppercase;
+    border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 800; letter-spacing: -0.03em;
+    max-width: 780px; margin: 0 auto 20px;
+  }
+  h1 .grad {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p {
+    color: var(--text-dim); font-size: 1.15rem;
+    max-width: 560px; margin: 0 auto 36px;
+  }
+  .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  section.features { padding: 80px 0; border-top: 1px solid var(--border); }
+  .section-title { text-align: center; margin-bottom: 56px; }
+  .section-title h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .section-title p { color: var(--text-dim); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px;
+  }
+  .card .icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 18px;
+  }
+  .card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+  .card p { color: var(--text-dim); font-size: 0.95rem; }
+
+  section.cta {
+    padding: 90px 0; text-align: center; border-top: 1px solid var(--border);
+  }
+  section.cta h2 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
+  section.cta p { color: var(--text-dim); margin-bottom: 32px; }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 32px 0;
+    color: var(--text-dim); font-size: 0.9rem;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">zen<span>too</span></div>
+    <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Software sob medida</span>
+    <h1>Softwares que <span class="grad">resolvem</span> o problema do seu negócio</h1>
+    <p>A Zentoo desenvolve e vende soluções digitais sob medida — do sistema interno ao produto que seu cliente usa todo dia.</p>
+    <div class="hero-actions">
+      <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a class="btn ghost" href="#features">Ver o que fazemos</a>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="section-title">
+      <h2>O que a Zentoo entrega</h2>
+      <p>Software com dono, do primeiro protótipo ao dia a dia em produção.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">⚙️</div>
+        <h3>Sistemas sob medida</h3>
+        <p>Do zero ou integrado ao que já existe, focado no processo real da sua operação.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🚀</div>
+        <h3>Automação</h3>
+        <p>Menos trabalho manual, menos planilha, menos retrabalho — mais tempo pro que importa.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛠️</div>
+        <h3>Suporte contínuo</h3>
+        <p>Software não termina na entrega. Acompanhamos, ajustamos e evoluímos com você.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Quer conversar sobre o seu projeto?</h2>
+    <p>Chama no WhatsApp e explica o que você precisa.</p>
+    <a class="btn" href="https://wa.me/5519982521727" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    &copy; 2026 Zentoo. Todos os direitos reservados.
+  </div>
+</footer>
+
+</body>
+</html>
