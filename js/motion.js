@@ -84,9 +84,12 @@
 
     window.scrollTo(0, 0);
 
+    // O estado inicial já veio do CSS (`.js .im-box` e companhia), então aqui
+    // não se esconde nada: só se anima a partir do que está na tela. Repetir
+    // os mesmos valores é de propósito — garante o ponto de partida sem
+    // provocar mudança visual nenhuma.
     var box = intro.querySelector('.im-box');
-    var len = box ? box.getTotalLength() : 0;
-    if (box) gsap.set(box, { strokeDasharray: len, strokeDashoffset: len });
+    gsap.set(box, { strokeDasharray: 1, strokeDashoffset: 1 });
     gsap.set('.im-dot', { scale: 0, transformOrigin: 'center' });
     gsap.set('.intro-word', { yPercent: 45, opacity: 0 });
     gsap.set('.intro-sub', { opacity: 0 });
@@ -255,50 +258,64 @@
   });
 
   /* ------------------------------------------------------------------ *
-   * 4. Revelações reversíveis.
-   * `toggleActions: play none none reverse` é o que faz a página se
-   * desmontar quando o scroll volta: entra tocando, sai de ré.
+   * 4. Revelações presas ao scroll.
+   *
+   * Com `toggleActions` a animação rodava no relógio: disparava com a seção
+   * ainda espiando no rodapé e acabava antes de você olhar para ela, e só
+   * desfazia se o scroll voltasse todo o caminho até o ponto de disparo.
+   * Com `scrub` a barra de progresso é a própria posição do scroll: descendo
+   * monta, subindo desmonta, na velocidade do dedo.
+   *
+   * `ease: "none"` nos tweens de dentro pelo mesmo motivo — a curva quem faz
+   * é o scroll. É o que os 835 `ease:"none"` do site do GTA VI indicavam.
    * ------------------------------------------------------------------ */
-  function revela(trigger, monta, start) {
+  function revela(trigger, monta, start, end) {
     var tl = gsap.timeline({
-      scrollTrigger: { trigger: trigger, start: start || 'top 78%', toggleActions: 'play none none reverse' }
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: trigger,
+        start: start || 'top 82%',   // a seção assoma
+        end: end || 'top 38%',       // e está confortavelmente na tela
+        scrub: 0.55
+      }
     });
     monta(tl);
     return tl;
   }
 
-  // sinais: a linha sobe e o traço âmbar é riscado, item por item
+  // sinais: cada linha sobe e o traço âmbar é riscado, item por item, como
+  // quem vai marcando uma lista enquanto desce a página
   revela('#s-sinais', function (tl) {
-    tl.fromTo('#s-sinais [data-anim]:not(li)', { y: 22, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.85, ease: EASE, stagger: 0.1 }, 0)
-      .fromTo('.spec li', { y: 18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, ease: EASE, stagger: 0.075 }, 0.1)
+    tl.fromTo('#s-sinais [data-anim]:not(li)', { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, stagger: 0.1 }, 0)
+      .fromTo('.spec li', { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.22, stagger: 0.14 }, 0.18)
       .fromTo('.spec .tick', { scaleX: 0 },
-        { scaleX: 1, duration: 0.5, ease: EASE, stagger: 0.075 }, 0.22);
+        { scaleX: 1, duration: 0.18, stagger: 0.14 }, 0.26);
   });
 
-  // etapas: entram na ordem e os números contam — sequência de verdade.
-  // Os contadores vivem na mesma timeline, então voltam a 00 de ré.
+  // etapas: entram na ordem e os números contam junto — subindo, contam de
+  // volta para 00, porque vivem na mesma timeline presa ao scroll
   revela('#s-como', function (tl) {
-    tl.fromTo('#s-como [data-anim]:not(.step)', { y: 22, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.85, ease: EASE, stagger: 0.1 }, 0)
-      .fromTo('.step', { y: 26, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: EASE, stagger: 0.14 }, 0.08);
+    tl.fromTo('#s-como [data-anim]:not(.step)', { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, stagger: 0.1 }, 0)
+      .fromTo('.step', { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.26, stagger: 0.2 }, 0.2);
     document.querySelectorAll('.step .num').forEach(function (el, i) {
       var o = { v: 0 };
       tl.to(o, {
-        v: parseInt(el.dataset.count, 10), duration: 1, ease: 'power2.out',
+        v: parseInt(el.dataset.count, 10), duration: 0.3,
         onUpdate: function () { el.textContent = String(Math.round(o.v)).padStart(2, '0'); }
-      }, 0.2 + i * 0.14);
+      }, 0.24 + i * 0.2);
     });
   });
 
   // fechamento: o âmbar inunda de baixo para cima, e recua igual na volta
   revela('#s-close', function (tl) {
     tl.fromTo('#s-close', { clipPath: 'inset(100% 0% 0% 0%)' },
-        { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: EASE }, 0)
-      .fromTo('#s-close [data-anim]', { y: 24, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: EASE, stagger: 0.1 }, 0.3);
+        { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.55 }, 0)
+      .fromTo('#s-close [data-anim]', { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, stagger: 0.14 }, 0.3);
   });
 
   /* ------------------------------------------------------------------ *
@@ -324,17 +341,17 @@
       });
     } else {
       revela('#trabalhos', function (tl) {
-        tl.fromTo('#trabalhos [data-anim]', { y: 22, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.8, ease: EASE, stagger: 0.09 }, 0);
-      }, 'top 72%');
+        tl.fromTo('#trabalhos [data-anim]', { y: 26, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.3, stagger: 0.16 }, 0);
+      });
     }
   });
 
   mm.add('(max-width: 899px)', function () {
     revela('#trabalhos', function (tl) {
-      tl.fromTo('#trabalhos [data-anim]', { y: 22, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: EASE, stagger: 0.09 }, 0);
-    }, 'top 72%');
+      tl.fromTo('#trabalhos [data-anim]', { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.3, stagger: 0.16 }, 0);
+    });
   });
 
   /* ------------------------------------------------------------------ *
