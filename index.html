@@ -44,6 +44,7 @@
   --z-section: 1;
   --z-thread: 3;
   --z-header: 20;
+  --z-intro: 100;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -176,7 +177,6 @@ h1 .l { display: block; }
 .dg .dg-sub    { font-size: 19px; font-weight: 500; fill: var(--muted); }
 .dg .dg-dim    { font-size: 18px; font-weight: 600; fill: var(--amber-ink); }
 .dg .track     { fill: none; stroke: oklch(0.86 0.006 65); stroke-width: 2.5; }
-.dg .build     { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round; }
 .dg .pulse     { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round;
                  stroke-dasharray: 150 1015; stroke-dashoffset: 0;
                  animation: dg-run 6s linear infinite; }
@@ -303,14 +303,31 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
 .js [data-wipe="up"]   { clip-path: inset(100% 0 0 0); }
 .js .thread .th-head   { opacity: 0; }
 
-/* O circuito só se monta com o scroll onde a seção é presa na tela, e ela
-   só é presa onde cabe no viewport. Abaixo de 900px o diagrama já nasce
-   pronto, por isso estes estados iniciais vivem dentro da media query. */
-.dg .build { opacity: 0; }
-@media (min-width: 900px) {
-  .js .dg .build { opacity: 1; }
-  .js .dg .stop, .js .dg .pulse, .js .dg .dg-core { opacity: 0; }
+/* ---------------------------- abertura ---------------------------- */
+html:not(.js) .intro { display: none; }
+/* o scroll fica preso só enquanto a abertura está no ar */
+html.intro-on, html.intro-on body { overflow: hidden; }
+
+.intro {
+  position: fixed; inset: 0; z-index: var(--z-intro);
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0.85rem;
 }
+.intro-stack { display: flex; align-items: center; gap: 0.85rem; }
+.intro-mark { width: clamp(44px, 7vw, 62px); height: auto; overflow: visible; }
+.im-box { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+.im-dot { fill: var(--amber); transform-origin: center; }
+.intro-word {
+  font-weight: 800; font-stretch: 112%; letter-spacing: -0.05em;
+  font-size: clamp(2.4rem, 6vw, 3.9rem); line-height: 1;
+}
+.intro-sub {
+  font-size: clamp(0.86rem, 1.2vw, 1rem); font-weight: 600;
+  font-stretch: 88%; letter-spacing: 0.02em; color: var(--muted);
+}
+.intro-rule { display: block; width: clamp(120px, 18vw, 240px); height: 2px; background: var(--amber); transform-origin: center; }
+
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -353,12 +370,31 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
 // conteúdo fica preso invisível.
 (function () {
   var d = document.documentElement;
-  d.classList.add('js');
-  setTimeout(function () { if (!window.__zAnim) d.classList.remove('js'); }, 2000);
+  d.classList.add('js', 'intro-on');
+  // recarregar no meio da página pularia a abertura e deixaria o scroll travado
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  setTimeout(function () {
+    if (!window.__zAnim) d.classList.remove('js', 'intro-on');
+  }, 2200);
 })();
 </script>
 </head>
 <body>
+
+<!-- Abertura. Só existe com JavaScript: `html:not(.js)` a esconde, e a rede
+     de segurança do <head> tira a classe se o GSAP não carregar — ninguém
+     fica preso olhando para uma logo parada. -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-stack">
+    <svg class="intro-mark" viewBox="0 0 32 32">
+      <path class="im-box" d="M11.5 3.5H20.5A8 8 0 0 1 28.5 11.5V20.5A8 8 0 0 1 20.5 28.5H11.5A8 8 0 0 1 3.5 20.5V11.5A8 8 0 0 1 11.5 3.5Z"/>
+      <circle class="im-dot" cx="16" cy="16" r="5"/>
+    </svg>
+    <span class="intro-word">zentoo</span>
+  </div>
+  <span class="intro-sub">software sob medida</span>
+  <span class="intro-rule"></span>
+</div>
 
 <div class="grid-layer" aria-hidden="true"></div>
 
@@ -416,9 +452,6 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
           <path class="corner" d="M24 118V98h20M816 98h20v20M836 502v20h-20M44 522H24v-20"/>
 
           <path class="track" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
-          <!-- `build` é o circuito sendo traçado pelo scroll; `pulse` é o
-               ciclo que roda sozinho depois de montado. Um entrega ao outro. -->
-          <path class="build" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
           <path class="pulse" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
 
           <g class="stop">
