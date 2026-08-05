@@ -319,14 +319,32 @@ html.intro-on, html.intro-on body { overflow: hidden; }
 .im-box { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
 .im-dot { fill: var(--amber); }
 
-/* Estado inicial da abertura no CSS, não no JS. O motion.js só roda no fim
-   do <body>: se ele fosse o responsável por esconder, a logo pintaria
-   inteira primeiro, sumiria e só então entraria animada. */
-.js .im-box    { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.js .im-dot    { opacity: 0; }
-.js .intro-word { transform: translateY(108%); }
-.js .intro-sub  { opacity: 0; }
-.js .intro-rule { transform: scaleX(0); }
+/* A abertura é 100% CSS, de propósito. Quando o GSAP a animava, ela só
+   começava depois de baixar e executar 148KB de JavaScript: medido, 1549ms
+   contra 680ms da primeira pintura — quase 0,9s de tela parada. Em CSS ela
+   arranca junto com o primeiro quadro pintado. */
+.js .im-box {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: im-draw 0.66s cubic-bezier(0.65, 0, 0.35, 1) 0.05s forwards;
+}
+.js .im-dot {
+  opacity: 0; transform: scale(0);
+  transform-origin: 16px 16px;   /* centro em unidades do viewBox 0 0 32 32 */
+  animation: im-pop 0.45s var(--ease) 0.43s forwards;
+}
+.js .intro-word { transform: translateY(108%); animation: word-up 0.7s var(--ease) 0.39s forwards; }
+/* o subtítulo entra depois que o nome assenta, para os dois nunca dividirem
+   o mesmo espaço */
+.js .intro-sub  { opacity: 0; animation: fade-in 0.45s var(--ease) 0.85s forwards; }
+.js .intro-rule { transform: scaleX(0); animation: rule-in 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.9s forwards; }
+.js .intro      { animation: intro-out 0.8s cubic-bezier(0.87, 0, 0.13, 1) 1.7s forwards; }
+
+@keyframes im-draw  { to { stroke-dashoffset: 0; } }
+@keyframes im-pop   { to { opacity: 1; transform: scale(1); } }
+@keyframes word-up  { to { transform: translateY(0); } }
+@keyframes fade-in  { to { opacity: 1; } }
+@keyframes rule-in  { to { transform: scaleX(1); } }
+@keyframes intro-out { to { transform: translateY(-100%); } }
 .intro-word-clip { display: block; overflow: hidden; }
 .intro-word {
   display: block;
@@ -410,6 +428,28 @@ html.intro-on, html.intro-on body { overflow: hidden; }
   <span class="intro-sub">software sob medida</span>
   <span class="intro-rule"></span>
 </div>
+<script>
+// A abertura termina sozinha, sem depender do GSAP: quem avisa é o
+// `animationend` da própria animação CSS. Assim o scroll é solto na hora
+// certa mesmo que o JavaScript pesado ainda esteja baixando.
+(function () {
+  var d = document.documentElement, intro = document.getElementById('intro');
+  function fim() {
+    if (window.__introFim) return;
+    window.__introFim = true;
+    d.classList.remove('intro-on');
+    if (intro && intro.parentNode) intro.parentNode.removeChild(intro);
+    window.dispatchEvent(new Event('zentoo:intro'));
+  }
+  if (!intro || !d.classList.contains('js')) { fim(); return; }
+  intro.addEventListener('animationend', function (e) {
+    if (e.target === intro && e.animationName === 'intro-out') fim();
+  });
+  // rede: aba oculta ou animações desligadas no sistema não disparam
+  // animationend, e ninguém pode ficar preso atrás da abertura
+  setTimeout(fim, 3600);
+})();
+</script>
 
 <div class="grid-layer" aria-hidden="true"></div>
 

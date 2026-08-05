@@ -76,45 +76,6 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 1 e 2. Abertura.
-   * ------------------------------------------------------------------ */
-  function abertura(pronto) {
-    var intro = document.getElementById('intro');
-    if (!intro) { pronto(); return; }
-
-    window.scrollTo(0, 0);
-
-    // O estado inicial já veio do CSS (`.js .im-box` e companhia), então aqui
-    // não se esconde nada: só se anima a partir do que está na tela. Repetir
-    // os mesmos valores é de propósito — garante o ponto de partida sem
-    // provocar mudança visual nenhuma.
-    var box = intro.querySelector('.im-box');
-    gsap.set(box, { strokeDasharray: 1, strokeDashoffset: 1 });
-    // sem transformOrigin explícito: o GSAP já usa o centro do bbox em SVG.
-    // Passar 'center' junto com transform-box no CSS fazia os dois
-    // compensarem a mesma origem, e o ponto saía deslocado 16px do quadrado.
-    gsap.set('.im-dot', { scale: 0, opacity: 0 });
-    // `y: 0` explícito é obrigatório: o GSAP lê o translateY(108%) do CSS como
-    // um `y` fixo em pixels, e o `yPercent` somaria por cima. Animar só o
-    // yPercent de volta a zero deixava o `y` para trás e o nome nunca subia.
-    gsap.set('.intro-word', { y: 0, yPercent: 108 });   // atrás da máscara
-    gsap.set('.intro-sub', { opacity: 0 });
-    gsap.set('.intro-rule', { scaleX: 0 });
-
-    gsap.timeline({ onComplete: pronto })
-      .to(box, { strokeDashoffset: 0, duration: 0.66, ease: 'power2.inOut' }, 0)
-      .to('.im-dot', { scale: 1, opacity: 1, duration: 0.45, ease: EASE }, 0.38)
-      .to('.intro-word', { yPercent: 0, duration: 0.7, ease: EASE }, 0.34)
-      // o subtítulo só entra depois que o nome assentou, para os dois nunca
-      // dividirem o mesmo espaço
-      .to('.intro-sub', { opacity: 1, duration: 0.45, ease: EASE }, 0.8)
-      .to('.intro-rule', { scaleX: 1, duration: 0.55, ease: 'power2.inOut' }, 0.86)
-      // a abertura sobe e sai, e a página fica à mostra por baixo
-      .to('.intro-stack, .intro-sub, .intro-rule', { opacity: 0, duration: 0.35, ease: 'none' }, 1.5)
-      .to(intro, { yPercent: -100, duration: 0.8, ease: 'expo.inOut' }, 1.54);
-  }
-
-  /* ------------------------------------------------------------------ *
    * 3. Entrada do hero.
    * ------------------------------------------------------------------ */
   function heroEntra() {
@@ -334,38 +295,24 @@
   }, 'top 65%', 'bottom bottom');
 
   /* ------------------------------------------------------------------ *
-   * Pin + scrub na faixa de trabalhos. Só onde a seção cabe na tela —
-   * prender algo mais alto que o viewport corta conteúdo, que é o pecado
-   * clássico da técnica. O matchMedia desfaz tudo sozinho ao trocar de faixa.
+   * Faixa de trabalhos.
    * ------------------------------------------------------------------ */
-  var mm = gsap.matchMedia();
-
-  mm.add('(min-width: 900px)', function () {
-    var dark = document.querySelector('#trabalhos');
-    if (dark && dark.offsetHeight <= window.innerHeight) {
-      var t2 = gsap.timeline({
-        scrollTrigger: {
-          trigger: dark, start: 'top top', end: '+=110%',
-          pin: true, pinSpacing: true, scrub: 0.5, anticipatePin: 1, invalidateOnRefresh: true
-        }
-      });
-      t2.fromTo('#trabalhos [data-anim]:not(li)', { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, ease: 'none', duration: 0.08, stagger: 0.04 }, 0);
-      gsap.utils.toArray('#trabalhos .work li').forEach(function (li, i) {
-        t2.fromTo(li, { y: 26, opacity: 0 }, { y: 0, opacity: 1, ease: 'none', duration: 0.09 }, 0.16 + i * 0.16);
-      });
-    } else {
-      revela('#trabalhos', function (tl) {
-        tl.fromTo('#trabalhos [data-anim]', { y: 26, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, stagger: 0.16 }, 0);
-      });
-    }
+  // A faixa de trabalhos é mais alta que a maioria das telas, então ela não
+  // pode ter um ritmo só, ancorado no próprio topo: quando o topo chegava à
+  // marca, as últimas linhas ainda estavam abaixo da dobra e animavam fora do
+  // campo de visão. Cada linha ganha o seu próprio trecho de scroll, medido
+  // contra ela mesma — assim entra exatamente quando ELA aparece, em qualquer
+  // altura de tela. (Foi por isso que o `pin` saiu: ele só engatava em telas
+  // altas o bastante para a seção inteira caber, o que quase nunca acontece.)
+  revela('#trabalhos', function (tl) {
+    tl.fromTo('#trabalhos [data-anim]:not(li)', { y: 26, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.3, stagger: 0.12 }, 0);
   });
 
-  mm.add('(max-width: 899px)', function () {
-    revela('#trabalhos', function (tl) {
-      tl.fromTo('#trabalhos [data-anim]', { y: 26, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.3, stagger: 0.16 }, 0);
+  gsap.utils.toArray('#trabalhos .work li').forEach(function (li) {
+    gsap.fromTo(li, { y: 34, opacity: 0 }, {
+      y: 0, opacity: 1, ease: 'none',
+      scrollTrigger: { trigger: li, start: 'top 92%', end: 'top 64%', scrub: 0.3 }
     });
   });
 
@@ -381,13 +328,13 @@
     document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
   }
 
-  // agora sim: abertura, e no fim dela o scroll é solto e o hero entra
-  abertura(function () {
-    root.classList.remove('intro-on');
-    var el = document.getElementById('intro');
-    if (el) el.remove();
+  // A abertura é CSS e avisa quando termina. Aqui só se retoma o que depende
+  // do GSAP: soltar o Lenis e fazer o hero entrar.
+  function depoisDaAbertura() {
     if (lenis) lenis.start();
     ScrollTrigger.refresh();
     heroEntra();
-  });
+  }
+  if (window.__introFim) depoisDaAbertura();
+  else window.addEventListener('zentoo:intro', depoisDaAbertura, { once: true });
 })();
