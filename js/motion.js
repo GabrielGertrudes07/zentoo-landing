@@ -292,7 +292,13 @@
         { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.55 }, 0)
       .fromTo('#s-close [data-anim]', { y: 28, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.3, stagger: 0.14 }, 0.3);
-  }, 'top 65%', 'bottom bottom');
+    // O trecho vai do momento em que a seção assoma até a base dela encostar
+    // na base da tela: dá a altura inteira da seção de scroll (~530px em vez
+    // dos ~250px de antes, medidos), o que tira o solavanco. Não dá para
+    // mirar uma fração do topo aqui — sendo a última seção, com o rodapé
+    // abaixo, o topo dela para bem antes de subir e a animação ficaria
+    // eternamente incompleta em telas altas.
+  }, 'top bottom', 'bottom bottom');
 
   /* ------------------------------------------------------------------ *
    * Faixa de trabalhos.
