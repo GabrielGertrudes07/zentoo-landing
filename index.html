@@ -176,6 +176,7 @@ h1 .l { display: block; }
 .dg .dg-sub    { font-size: 19px; font-weight: 500; fill: var(--muted); }
 .dg .dg-dim    { font-size: 18px; font-weight: 600; fill: var(--amber-ink); }
 .dg .track     { fill: none; stroke: oklch(0.86 0.006 65); stroke-width: 2.5; }
+.dg .build     { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round; }
 .dg .pulse     { fill: none; stroke: var(--amber); stroke-width: 4; stroke-linecap: round;
                  stroke-dasharray: 150 1015; stroke-dashoffset: 0;
                  animation: dg-run 6s linear infinite; }
@@ -299,9 +300,17 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
    Sem JavaScript (ou se o GSAP não carregar) nada disso se aplica e a
    página aparece inteira. A rede de segurança está no mesmo script. */
 .js [data-anim] { opacity: 0; }
-.js [data-wipe="down"] { clip-path: inset(0 0 100% 0); }
 .js [data-wipe="up"]   { clip-path: inset(100% 0 0 0); }
 .js .thread .th-head   { opacity: 0; }
+
+/* O circuito só se monta com o scroll onde a seção é presa na tela, e ela
+   só é presa onde cabe no viewport. Abaixo de 900px o diagrama já nasce
+   pronto, por isso estes estados iniciais vivem dentro da media query. */
+.dg .build { opacity: 0; }
+@media (min-width: 900px) {
+  .js .dg .build { opacity: 1; }
+  .js .dg .stop, .js .dg .pulse, .js .dg .dg-core { opacity: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -407,20 +416,32 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
           <path class="corner" d="M24 118V98h20M816 98h20v20M836 502v20h-20M44 522H24v-20"/>
 
           <path class="track" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
+          <!-- `build` é o circuito sendo traçado pelo scroll; `pulse` é o
+               ciclo que roda sozinho depois de montado. Um entrega ao outro. -->
+          <path class="build" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
           <path class="pulse" d="M294 150H566A44 44 0 0 1 610 194V366A44 44 0 0 1 566 410H294A44 44 0 0 1 250 366V194A44 44 0 0 1 294 150Z"/>
 
-          <circle class="node" cx="430" cy="150" r="13"/><circle class="node-core n1" cx="430" cy="150" r="7"/>
-          <circle class="node" cx="610" cy="280" r="13"/><circle class="node-core n2" cx="610" cy="280" r="7"/>
-          <circle class="node" cx="430" cy="410" r="13"/><circle class="node-core n3" cx="430" cy="410" r="7"/>
-          <circle class="node" cx="250" cy="280" r="13"/><circle class="node-core n4" cx="250" cy="280" r="7"/>
+          <g class="stop">
+            <circle class="node" cx="430" cy="150" r="13"/><circle class="node-core n1" cx="430" cy="150" r="7"/>
+            <text x="430" y="112" text-anchor="middle">pedido entra</text>
+          </g>
+          <g class="stop">
+            <circle class="node" cx="610" cy="280" r="13"/><circle class="node-core n2" cx="610" cy="280" r="7"/>
+            <text x="640" y="286" text-anchor="start">Pix gerado</text>
+          </g>
+          <g class="stop">
+            <circle class="node" cx="430" cy="410" r="13"/><circle class="node-core n3" cx="430" cy="410" r="7"/>
+            <text x="430" y="456" text-anchor="middle">pagamento confirmado</text>
+          </g>
+          <g class="stop">
+            <circle class="node" cx="250" cy="280" r="13"/><circle class="node-core n4" cx="250" cy="280" r="7"/>
+            <text x="220" y="286" text-anchor="end">cliente avisado</text>
+          </g>
 
-          <text x="430" y="112" text-anchor="middle">pedido entra</text>
-          <text x="640" y="286" text-anchor="start">Pix gerado</text>
-          <text x="430" y="456" text-anchor="middle">pagamento confirmado</text>
-          <text x="220" y="286" text-anchor="end">cliente avisado</text>
-
-          <text class="dg-center" x="430" y="274" text-anchor="middle">roda sozinho</text>
-          <text class="dg-sub" x="430" y="306" text-anchor="middle">sem ninguém no meio</text>
+          <g class="dg-core">
+            <text class="dg-center" x="430" y="274" text-anchor="middle">roda sozinho</text>
+            <text class="dg-sub" x="430" y="306" text-anchor="middle">sem ninguém no meio</text>
+          </g>
 
           <!-- cota interrompida no meio para o rótulo: não precisa de tarja
                branca por cima, que furaria o papel milimetrado do fundo -->
@@ -478,7 +499,7 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
   </section>
 
   <!-- ---------------------------- trabalhos ---------------------------- -->
-  <section class="band dark" id="trabalhos" data-wipe="down">
+  <section class="band dark" id="trabalhos">
     <div class="wrap">
       <h2 data-anim>O que já construímos</h2>
       <p class="h2-note" data-anim>Sistemas em produção, rodando hoje.</p>
@@ -529,6 +550,7 @@ footer a:hover { color: var(--ink); text-decoration-color: var(--amber-line); }
   </div>
 </footer>
 
+<script src="/js/lenis.min.js"></script>
 <script src="/js/gsap.min.js"></script>
 <script src="/js/ScrollTrigger.min.js"></script>
 <script src="/js/motion.js"></script>
