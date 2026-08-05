@@ -90,20 +90,28 @@
     // provocar mudança visual nenhuma.
     var box = intro.querySelector('.im-box');
     gsap.set(box, { strokeDasharray: 1, strokeDashoffset: 1 });
-    gsap.set('.im-dot', { scale: 0, transformOrigin: 'center' });
-    gsap.set('.intro-word', { yPercent: 45, opacity: 0 });
+    // sem transformOrigin explícito: o GSAP já usa o centro do bbox em SVG.
+    // Passar 'center' junto com transform-box no CSS fazia os dois
+    // compensarem a mesma origem, e o ponto saía deslocado 16px do quadrado.
+    gsap.set('.im-dot', { scale: 0, opacity: 0 });
+    // `y: 0` explícito é obrigatório: o GSAP lê o translateY(108%) do CSS como
+    // um `y` fixo em pixels, e o `yPercent` somaria por cima. Animar só o
+    // yPercent de volta a zero deixava o `y` para trás e o nome nunca subia.
+    gsap.set('.intro-word', { y: 0, yPercent: 108 });   // atrás da máscara
     gsap.set('.intro-sub', { opacity: 0 });
     gsap.set('.intro-rule', { scaleX: 0 });
 
     gsap.timeline({ onComplete: pronto })
       .to(box, { strokeDashoffset: 0, duration: 0.66, ease: 'power2.inOut' }, 0)
-      .to('.im-dot', { scale: 1, duration: 0.45, ease: EASE }, 0.38)
-      .to('.intro-word', { yPercent: 0, opacity: 1, duration: 0.6, ease: EASE }, 0.3)
-      .to('.intro-sub', { opacity: 1, duration: 0.45, ease: EASE }, 0.56)
-      .to('.intro-rule', { scaleX: 1, duration: 0.55, ease: 'power2.inOut' }, 0.6)
+      .to('.im-dot', { scale: 1, opacity: 1, duration: 0.45, ease: EASE }, 0.38)
+      .to('.intro-word', { yPercent: 0, duration: 0.7, ease: EASE }, 0.34)
+      // o subtítulo só entra depois que o nome assentou, para os dois nunca
+      // dividirem o mesmo espaço
+      .to('.intro-sub', { opacity: 1, duration: 0.45, ease: EASE }, 0.8)
+      .to('.intro-rule', { scaleX: 1, duration: 0.55, ease: 'power2.inOut' }, 0.86)
       // a abertura sobe e sai, e a página fica à mostra por baixo
-      .to('.intro-stack, .intro-sub, .intro-rule', { opacity: 0, duration: 0.35, ease: 'none' }, 1.2)
-      .to(intro, { yPercent: -100, duration: 0.8, ease: 'expo.inOut' }, 1.24);
+      .to('.intro-stack, .intro-sub, .intro-rule', { opacity: 0, duration: 0.35, ease: 'none' }, 1.5)
+      .to(intro, { yPercent: -100, duration: 0.8, ease: 'expo.inOut' }, 1.54);
   }
 
   /* ------------------------------------------------------------------ *
@@ -274,9 +282,14 @@
       defaults: { ease: 'none' },
       scrollTrigger: {
         trigger: trigger,
-        start: start || 'top 82%',   // a seção assoma
-        end: end || 'top 38%',       // e está confortavelmente na tela
-        scrub: 0.55
+        // O que importa não é só onde começa e termina, é o quanto de scroll
+        // fica no meio. Espalhado por ~700px, subindo a seção mal se desfazia
+        // enquanto ainda estava à vista. Este trecho é curto (~390px) e fica
+        // todo dentro da faixa em que a seção ocupa a tela: descendo ela se
+        // monta ao entrar, subindo se desfaz enquanto você ainda a vê.
+        start: start || 'top 65%',
+        end: end || 'top 22%',
+        scrub: 0.3   // menos atraso: subindo rápido, a desmontagem não fica para trás
       }
     });
     monta(tl);
@@ -310,13 +323,15 @@
     });
   });
 
-  // fechamento: o âmbar inunda de baixo para cima, e recua igual na volta
+  // Fechamento: o âmbar inunda de baixo para cima, e recua igual na volta.
+  // Alcance próprio porque é a última seção — com o rodapé logo abaixo, o
+  // topo dela nunca sobe até 18% da tela, e a animação nunca completaria.
   revela('#s-close', function (tl) {
     tl.fromTo('#s-close', { clipPath: 'inset(100% 0% 0% 0%)' },
         { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.55 }, 0)
       .fromTo('#s-close [data-anim]', { y: 28, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.3, stagger: 0.14 }, 0.3);
-  });
+  }, 'top 65%', 'bottom bottom');
 
   /* ------------------------------------------------------------------ *
    * Pin + scrub na faixa de trabalhos. Só onde a seção cabe na tela —
